@@ -13,6 +13,9 @@ export default {
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        "landing-orange": "hsl(var(--landing-orange))",
+        "landing-surface": "hsl(var(--landing-surface))",
+        "landing-soft": "hsl(var(--landing-soft))",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

@@ -1,57 +1,125 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
 import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
-import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
+    <main className="min-h-screen bg-landing-orange flex items-center justify-center px-4 py-10">
+      <div className="relative max-w-5xl w-full bg-landing-surface rounded-[32px] border border-border/50 shadow-[0_24px_80px_rgba(15,23,42,0.24)] overflow-hidden">
+        {/* Top border accent */}
+        <div className="h-2 w-full bg-gradient-to-r from-[#FF6B35] via-[#8B5CF6] to-[#22C55E]" />
+
+        {/* Content */}
+        <div className="px-6 sm:px-10 pt-6 sm:pt-8 pb-10 sm:pb-14">
+          {/* Navbar */}
+          <nav className="flex items-center justify-between mb-10 sm:mb-14 text-sm">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/60 bg-landing-soft">
+                <span className="h-4 w-4 rounded-sm bg-[#FF6B35]" />
+              </span>
+              <div className="flex flex-col leading-tight">
+                <span className="font-semibold tracking-tight">
+                  Content Scheduler
+                </span>
+                <span className="text-[11px] text-muted-foreground">
+                  TikTok &amp; Instagram
+                </span>
               </div>
             </div>
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
-          </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
-        </div>
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
-        </footer>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Link
+                href="/auth/login"
+                className="hidden sm:inline-flex items-center rounded-full px-4 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/auth/sign-up"
+                className="inline-flex items-center rounded-full bg-foreground text-background px-4 sm:px-5 py-1.5 text-xs font-semibold shadow-sm hover:bg-foreground/90 transition-colors"
+              >
+                Inizia gratis
+              </Link>
+            </div>
+          </nav>
+
+          {/* Hero */}
+          <Hero />
+
+          {/* Feature grid */}
+          <section className="mt-10 grid gap-4 sm:gap-5 sm:grid-cols-2">
+            <div className="rounded-3xl bg-feature-orange/90 text-foreground/95 p-5 sm:p-6 flex flex-col justify-between shadow-sm">
+              <div className="mb-6 flex items-center justify-between">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-sm">
+                  ⏱
+                </span>
+                <span className="h-8 w-8 rounded-full border border-black/10" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-base sm:text-lg font-semibold">
+                  Pianificazione intelligente
+                </h3>
+                <p className="text-xs sm:text-sm text-black/80">
+                  Imposta una volta il tuo calendario editoriale e lascia che il
+                  sistema pubblichi i contenuti nei momenti migliori per te.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-feature-purple text-foreground/95 p-5 sm:p-6 flex flex-col justify-between shadow-sm">
+              <div className="mb-6 flex items-center justify-between">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-sm">
+                  📲
+                </span>
+                <span className="h-8 w-8 rounded-full border border-white/20" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-base sm:text-lg font-semibold">
+                  Multi‑piattaforma
+                </h3>
+                <p className="text-xs sm:text-sm text-white/90">
+                  Pianifica una volta, pubblica su TikTok e Instagram
+                  contemporaneamente mantenendo il controllo sui dettagli.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-feature-green text-foreground/95 p-5 sm:p-6 flex flex-col justify-between shadow-sm">
+              <div className="mb-6 flex items-center justify-between">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-sm">
+                  📈
+                </span>
+                <span className="h-8 w-8 rounded-full border border-black/10" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-base sm:text-lg font-semibold">
+                  Insight immediati
+                </h3>
+                <p className="text-xs sm:text-sm text-black/80">
+                  Visualizza performance, orari migliori e risultati delle
+                  campagne in un unico pannello chiaro.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-feature-gray text-foreground/95 p-5 sm:p-6 flex flex-col justify-between shadow-sm">
+              <div className="mb-6 flex items-center justify-between">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-sm">
+                  ⚙️
+                </span>
+                <span className="h-8 w-8 rounded-full border border-black/10" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-base sm:text-lg font-semibold">
+                  Automazione completa
+                </h3>
+                <p className="text-xs sm:text-sm text-black/80">
+                  Dalle bozze alla pubblicazione: reminder, approvazioni e
+                  pubblicazione automatica, senza passare dal telefono.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
     </main>
   );

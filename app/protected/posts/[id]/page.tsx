@@ -46,7 +46,14 @@ export default async function PostDetailPage({
   return (
     <div className="flex-1 w-full flex flex-col gap-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Dettaglio Post</h1>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Dettaglio post
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Rivedi contenuti, stato di pubblicazione e programmazione.
+          </p>
+        </div>
         {post.status !== "published" && post.status !== "publishing" && (
           <DeletePostButton postId={post.id} />
         )}

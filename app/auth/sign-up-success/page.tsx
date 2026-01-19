@@ -5,28 +5,38 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AuthShell } from "@/components/auth-shell";
+import Link from "next/link";
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                Thank you for signing up!
-              </CardTitle>
-              <CardDescription>Check your email to confirm</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                You&apos;ve successfully signed up. Please check your email to
-                confirm your account before signing in.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
+    <AuthShell>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Controlla la tua email</CardTitle>
+          <CardDescription>
+            Ti abbiamo inviato un link per confermare l&apos;account
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Apri la casella di posta che hai usato per registrarti e segui le
+            istruzioni per attivare il tuo profilo su Content Scheduler.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Se non trovi l&apos;email, controlla anche nella cartella spam o
+            promozioni.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/auth/login"
+              className="text-sm font-medium underline underline-offset-4"
+            >
+              Vai al login
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </AuthShell>
   );
 }

@@ -4,14 +4,16 @@ CREATE EXTENSION IF NOT EXISTS pg_net;
 -- Schedule job to publish scheduled posts every minute
 SELECT cron.schedule(
   'publish-scheduled-posts',
-  '* * * * *',  -- Every minute
+  '*/5 * * * *',  -- Every 5 minutes
   $$
   SELECT
     net.http_post(
-      url := current_setting('https://dewvvhwwpvkzcwpqaeay.supabase.co') || '/functions/v1/publish-scheduled',
+      -- Usa direttamente l'URL del progetto Supabase
+      url := 'https://dewvvhwwpvkzcwpqaeay.supabase.co/functions/v1/publish-scheduled',
       headers := jsonb_build_object(
         'Content-Type', 'application/json',
-        'Authorization', 'Bearer ' || current_setting('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRld3Z2aHd3cHZremN3cHFhZWF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODUwNjM3MiwiZXhwIjoyMDg0MDgyMzcyfQ.g2GWVbZ5R6M358AAiCKXl4ChhTK6AUPTbx1OXq68aFM')
+        -- ATTENZIONE: qui è hardcoded il service_role key. Valuta se tenerlo fuori dal repo.
+        'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRld3Z2aHd3cHZremN3cHFhZWF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODUwNjM3MiwiZXhwIjoyMDg0MDgyMzcyfQ.g2GWVbZ5R6M358AAiCKXl4ChhTK6AUPTbx1OXq68aFM'
       )
     ) AS request_id;
   $$
@@ -24,10 +26,12 @@ SELECT cron.schedule(
   $$
   SELECT
     net.http_post(
-      url := current_setting('https://dewvvhwwpvkzcwpqaeay.supabase.co') || '/functions/v1/refresh-tokens',
+      -- Usa direttamente l'URL del progetto Supabase
+      url := 'https://dewvvhwwpvkzcwpqaeay.supabase.co/functions/v1/refresh-tokens',
       headers := jsonb_build_object(
         'Content-Type', 'application/json',
-        'Authorization', 'Bearer ' || current_setting('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRld3Z2aHd3cHZremN3cHFhZWF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODUwNjM3MiwiZXhwIjoyMDg0MDgyMzcyfQ.g2GWVbZ5R6M358AAiCKXl4ChhTK6AUPTbx1OXq68aFM')
+        -- ATTENZIONE: qui è hardcoded il service_role key. Valuta se tenerlo fuori dal repo.
+        'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRld3Z2aHd3cHZremN3cHFhZWF5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODUwNjM3MiwiZXhwIjoyMDg0MDgyMzcyfQ.g2GWVbZ5R6M358AAiCKXl4ChhTK6AUPTbx1OXq68aFM'
       )
     ) AS request_id;
   $$

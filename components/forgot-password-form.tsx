@@ -48,24 +48,26 @@ export function ForgotPasswordForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       {success ? (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>Password reset instructions sent</CardDescription>
+          <CardHeader className="space-y-2">
+            <CardTitle className="text-2xl">Controlla la tua email</CardTitle>
+            <CardDescription>
+              Ti abbiamo inviato le istruzioni per reimpostare la password.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              If you registered using your email and password, you will receive
-              a password reset email.
+              Se hai creato l&apos;account con email e password, troverai un
+              messaggio con il link per scegliere una nuova password.
             </p>
           </CardContent>
         </Card>
       ) : (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Reset Your Password</CardTitle>
+          <CardHeader className="space-y-2">
+            <CardTitle className="text-2xl">Password dimenticata</CardTitle>
             <CardDescription>
-              Type in your email and we&apos;ll send you a link to reset your
-              password
+              Inserisci la tua email e ti invieremo un link per reimpostare la
+              password.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -84,16 +86,16 @@ export function ForgotPasswordForm({
                 </div>
                 {error && <p className="text-sm text-red-500">{error}</p>}
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send reset email"}
+                  {isLoading ? "Invio in corso..." : "Invia link di reset"}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">
-                Already have an account?{" "}
+                Hai già un account?{" "}
                 <Link
                   href="/auth/login"
                   className="underline underline-offset-4"
                 >
-                  Login
+                  Accedi
                 </Link>
               </div>
             </form>

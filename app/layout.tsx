@@ -9,8 +9,9 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Content Scheduler – Pianifica post per TikTok e Instagram",
+  description:
+    "Piattaforma di content scheduling per creator e brand: pianifica, automatizza e analizza i tuoi contenuti TikTok e Instagram da un'unica dashboard.",
 };
 
 const geistSans = Geist({

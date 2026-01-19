@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { SocialAccountCard } from "@/components/settings/SocialAccountCard";
+import { SettingsAlert } from "@/components/settings/SettingsAlert";
+import { Suspense } from "react";
 
-export default async function SettingsPage() {
+async function SettingsContent() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -24,7 +26,17 @@ export default async function SettingsPage() {
 
   return (
     <div className="flex-1 w-full flex flex-col gap-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold">Impostazioni</h1>
+      <div className="space-y-1">
+        <h1 className="text-3xl font-semibold tracking-tight">Impostazioni</h1>
+        <p className="text-sm text-muted-foreground">
+          Gestisci gli account collegati e le preferenze del tuo spazio di
+          lavoro.
+        </p>
+      </div>
+
+      <Suspense fallback={null}>
+        <SettingsAlert />
+      </Suspense>
 
       <div className="space-y-6">
         <div>
@@ -47,5 +59,13 @@ export default async function SettingsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={<div className="flex-1 w-full flex flex-col gap-8 max-w-4xl mx-auto"><h1 className="text-3xl font-bold">Impostazioni</h1><p>Caricamento...</p></div>}>
+      <SettingsContent />
+    </Suspense>
   );
 }

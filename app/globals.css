@@ -28,6 +28,10 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    /* Landing-specific colors */
+    --landing-orange: 17 100% 60%;
+    --landing-surface: 0 0% 100%;
+    --landing-soft: 210 40% 96%;
     --radius: 0.5rem;
   }
   .dark {
@@ -55,6 +59,9 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --landing-orange: 17 100% 45%;
+    --landing-surface: 222 47% 10%;
+    --landing-soft: 217 33% 17%;
   }
 }
 

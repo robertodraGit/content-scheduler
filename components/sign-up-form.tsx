@@ -59,9 +59,12 @@ export function SignUpForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Sign up</CardTitle>
-          <CardDescription>Create a new account</CardDescription>
+        <CardHeader className="space-y-2">
+          <CardTitle className="text-2xl">Crea il tuo account</CardTitle>
+          <CardDescription>
+            Registrati per iniziare a programmare contenuti su TikTok e
+            Instagram.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
@@ -91,7 +94,7 @@ export function SignUpForm({
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="repeat-password">Repeat Password</Label>
+                  <Label htmlFor="repeat-password">Ripeti password</Label>
                 </div>
                 <Input
                   id="repeat-password"
@@ -103,13 +106,13 @@ export function SignUpForm({
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating an account..." : "Sign up"}
+                {isLoading ? "Creazione in corso..." : "Registrati"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
+              Hai già un account?{" "}
               <Link href="/auth/login" className="underline underline-offset-4">
-                Login
+                Accedi
               </Link>
             </div>
           </form>

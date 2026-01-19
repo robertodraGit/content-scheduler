@@ -3,6 +3,8 @@
  * Handles OAuth and content posting to TikTok
  */
 
+import { randomBytes, createHash } from "crypto";
+
 const TIKTOK_API_BASE = "https://open.tiktokapis.com";
 
 export interface TikTokTokenResponse {
@@ -44,31 +46,116 @@ export interface TikTokPostResponse {
 }
 
 /**
- * Get TikTok OAuth authorization URL
+ * TikTok OAuth Error structure
+ * According to TikTok OAuth Error Handling documentation:
+ * https://developers.tiktok.com/doc/oauth-error-handling
  */
-export function getTikTokAuthUrl(redirectUri: string, state?: string): string {
+export interface TikTokError {
+  error: string;
+  error_description?: string;
+  log_id?: string;
+}
+
+/**
+ * Parse TikTok error response
+ * Handles both JSON error responses and plain text errors
+ */
+export function parseTikTokError(errorText: string): TikTokError {
+  try {
+    const parsed = JSON.parse(errorText);
+    return {
+      error: parsed.error || 'unknown_error',
+      error_description: parsed.error_description,
+      log_id: parsed.log_id,
+    };
+  } catch {
+    // If not JSON, it might be a simple error message
+    // Try to extract error information from plain text
+    return {
+      error: 'unknown_error',
+      error_description: errorText,
+    };
+  }
+}
+
+/**
+ * Generate a random code verifier for PKCE
+ */
+function generateCodeVerifier(): string {
+  // Generate 32 random bytes (256 bits) and convert to base64url
+  return randomBytes(32)
+    .toString("base64url")
+    .replace(/=/g, "")
+    .substring(0, 128);
+}
+
+/**
+ * Generate code challenge from verifier (SHA256 hash, base64url encoded)
+ */
+function generateCodeChallenge(verifier: string): string {
+  // Create SHA256 hash of the verifier
+  const hash = createHash("sha256").update(verifier).digest();
+  // Convert to base64url encoding
+  return hash
+    .toString("base64url")
+    .replace(/=/g, "");
+}
+
+/**
+ * Get TikTok OAuth authorization URL with PKCE
+ * 
+ * Note: If you receive a "non_sandbox_target" error, it means:
+ * 1. Your app is in Sandbox mode in TikTok Developer Portal
+ * 2. The TikTok account you're trying to log in with is not added as a "Target User"
+ * 
+ * To fix:
+ * - Go to TikTok Developer Portal > Your App > Sandbox Settings > Target Users
+ * - Add the TikTok account you want to test with
+ * - OR move your app to Production mode (requires TikTok approval)
+ */
+export function getTikTokAuthUrl(
+  redirectUri: string,
+  csrfState: string,
+): { url: string; codeVerifier: string } {
   const clientKey = process.env.TIKTOK_CLIENT_KEY;
   if (!clientKey) {
     throw new Error("TIKTOK_CLIENT_KEY is not set");
   }
 
+  // Generate PKCE code verifier and challenge
+  const codeVerifier = generateCodeVerifier();
+  const codeChallenge = generateCodeChallenge(codeVerifier);
+
   const params = new URLSearchParams({
     client_key: clientKey,
     redirect_uri: redirectUri,
     response_type: "code",
-    scope: "user.info.basic,video.publish",
-    state: state || "",
+    scope: "user.info.basic,video.publish,video.upload",
+    state: csrfState,
+    code_challenge: codeChallenge,
+    code_challenge_method: "S256",
   });
 
-  return `https://www.tiktok.com/v2/auth/authorize/?${params.toString()}`;
+  // Add target_environment parameter if specified (for production mode)
+  // This helps TikTok understand we're targeting production, not sandbox
+  const targetEnvironment = process.env.TIKTOK_TARGET_ENVIRONMENT;
+  if (targetEnvironment) {
+    params.set("target_environment", targetEnvironment);
+  }
+
+  return {
+    url: `https://www.tiktok.com/v2/auth/authorize/?${params.toString()}`,
+    codeVerifier,
+  };
 }
 
 /**
- * Exchange authorization code for access token
+ * Exchange authorization code for access token with PKCE
  */
 export async function exchangeTikTokCode(
   code: string,
   redirectUri: string,
+  codeVerifier: string,
 ): Promise<TikTokTokenResponse> {
   const clientKey = process.env.TIKTOK_CLIENT_KEY;
   const clientSecret = process.env.TIKTOK_CLIENT_SECRET;
@@ -90,13 +177,33 @@ export async function exchangeTikTokCode(
         code,
         grant_type: "authorization_code",
         redirect_uri: redirectUri,
+        code_verifier: codeVerifier,
       }),
     },
   );
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`TikTok token exchange failed: ${error}`);
+    const errorText = await response.text();
+    const tiktokError = parseTikTokError(errorText);
+    
+    // Log error details including log_id for TikTok support
+    console.error("[TikTok OAuth] Token exchange error:", {
+      error: tiktokError.error,
+      error_description: tiktokError.error_description,
+      log_id: tiktokError.log_id,
+      status: response.status,
+    });
+
+    // Build error message with log_id if available
+    let errorMessage = `TikTok token exchange failed: ${tiktokError.error}`;
+    if (tiktokError.error_description) {
+      errorMessage += ` - ${tiktokError.error_description}`;
+    }
+    if (tiktokError.log_id) {
+      errorMessage += ` (Log ID: ${tiktokError.log_id})`;
+    }
+    
+    throw new Error(errorMessage);
   }
 
   return response.json();
@@ -132,8 +239,27 @@ export async function refreshTikTokToken(
   );
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`TikTok token refresh failed: ${error}`);
+    const errorText = await response.text();
+    const tiktokError = parseTikTokError(errorText);
+    
+    // Log error details including log_id for TikTok support
+    console.error("[TikTok OAuth] Token refresh error:", {
+      error: tiktokError.error,
+      error_description: tiktokError.error_description,
+      log_id: tiktokError.log_id,
+      status: response.status,
+    });
+
+    // Build error message with log_id if available
+    let errorMessage = `TikTok token refresh failed: ${tiktokError.error}`;
+    if (tiktokError.error_description) {
+      errorMessage += ` - ${tiktokError.error_description}`;
+    }
+    if (tiktokError.log_id) {
+      errorMessage += ` (Log ID: ${tiktokError.log_id})`;
+    }
+    
+    throw new Error(errorMessage);
   }
 
   return response.json();
@@ -155,8 +281,35 @@ export async function getTikTokUserInfo(
   );
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to get TikTok user info: ${error}`);
+    const errorText = await response.text();
+    const tiktokError = parseTikTokError(errorText);
+    
+    // Log error details including log_id for TikTok support
+    console.error("[TikTok API] User info error:", {
+      error: tiktokError.error,
+      error_description: tiktokError.error_description,
+      log_id: tiktokError.log_id,
+      status: response.status,
+    });
+
+    // Handle specific error cases
+    if (tiktokError.error_description?.includes("Unsupported path") || 
+        tiktokError.error_description?.includes("Janus")) {
+      // This error often occurs in sandbox mode or when the endpoint is not available
+      const errorMessage = `TikTok user info endpoint not available. This may occur in sandbox mode. ${tiktokError.log_id ? `Log ID: ${tiktokError.log_id}` : ''}`;
+      throw new Error(errorMessage);
+    }
+
+    // Build error message with log_id if available
+    let errorMessage = `Failed to get TikTok user info: ${tiktokError.error}`;
+    if (tiktokError.error_description) {
+      errorMessage += ` - ${tiktokError.error_description}`;
+    }
+    if (tiktokError.log_id) {
+      errorMessage += ` (Log ID: ${tiktokError.log_id})`;
+    }
+    
+    throw new Error(errorMessage);
   }
 
   const data = await response.json();

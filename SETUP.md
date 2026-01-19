@@ -104,11 +104,35 @@ INSTAGRAM_APP_SECRET=your-facebook-app-secret
 
 1. Vai su [TikTok for Developers](https://developers.tiktok.com/)
 2. Crea una nuova app
-3. Abilita "Content Posting API"
+3. Abilita "Content Posting API" e "Login Kit"
 4. Configura i redirect URI: `http://localhost:3000/api/auth/tiktok/callback` (e la versione di produzione)
 5. Ottieni Client Key e Client Secret
 
 **Nota**: Per pubblicare contenuti pubblici, l'app deve essere approvata da TikTok.
+
+### Risoluzione Errori TikTok OAuth
+
+#### Errore "non_sandbox_target"
+
+Se ricevi l'errore `non_sandbox_target` durante il login, significa che:
+
+1. **La tua app è in modalità Sandbox** (non ancora in produzione)
+2. **L'account TikTok che stai usando non è nella lista dei "Target Users"**
+
+**Soluzione:**
+
+- **Opzione 1 (per testing)**: Aggiungi l'account come Target User
+  - Vai su TikTok Developer Portal > La tua app > Sandbox Settings > Target Users
+  - Aggiungi l'account TikTok che vuoi usare per testare
+  - Puoi aggiungere fino a 10 account
+
+- **Opzione 2 (per produzione)**: Sposta l'app in modalità Production
+  - Vai su TikTok Developer Portal > La tua app
+  - Cambia da Sandbox a Production mode
+  - Invia l'app per la revisione di TikTok
+  - Una volta approvata, qualsiasi utente potrà fare login
+
+**Nota**: Se la tua app è in Sandbox, solo gli account aggiunti come Target Users possono completare il login OAuth.
 
 ## Configurazione Instagram
 

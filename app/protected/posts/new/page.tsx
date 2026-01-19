@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ export default function NewPostPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [minDateTime, setMinDateTime] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,9 +39,16 @@ export default function NewPostPage() {
     setIsSubmitting(true);
 
     try {
+      // Convert the local datetime selected by the user into an ISO string with timezone (UTC)
+      // so that Postgres (TIMESTAMPTZ) stores the correct instant in time.
+      const scheduledAtDate = new Date(scheduledAt);
+      if (isNaN(scheduledAtDate.getTime())) {
+        throw new Error("Data/ora di pubblicazione non valida");
+      }
+
       const formData = new FormData();
       formData.append("platform", platform);
-      formData.append("scheduled_at", scheduledAt);
+      formData.append("scheduled_at", scheduledAtDate.toISOString());
       if (caption) {
         formData.append("caption", caption);
       }
@@ -66,14 +74,24 @@ export default function NewPostPage() {
     }
   };
 
-  // Get minimum datetime (now)
-  const now = new Date();
-  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  const minDateTime = now.toISOString().slice(0, 16);
+  // Get minimum datetime (now) on client to avoid Date mismatch between SSR and CSR
+  useEffect(() => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    setMinDateTime(now.toISOString().slice(0, 16));
+  }, []);
 
   return (
     <div className="flex-1 w-full flex flex-col gap-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold">Crea Nuovo Post</h1>
+      <div className="space-y-1">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Crea nuovo post
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Definisci piattaforma, orario e contenuti multimediali del tuo
+          prossimo contenuto.
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>

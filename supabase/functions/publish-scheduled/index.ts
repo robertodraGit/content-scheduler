@@ -92,21 +92,29 @@ Deno.serve(async (req) => {
         let platformPostId: string | null = null;
 
         if (post.platform === "tiktok") {
-          // Publish to TikTok
+          // Publish to TikTok using Content Posting API (photo post)
           const response = await fetch(
             `${TIKTOK_API_BASE}/v2/post/publish/content/init/`,
             {
               method: "POST",
               headers: {
                 Authorization: `Bearer ${socialAccount.access_token}`,
-                "Content-Type": "application/json",
+                "Content-Type": "application/json; charset=UTF-8",
               },
               body: JSON.stringify({
-                post_mode: "DIRECT_POST",
                 media_type: "PHOTO",
-                photo_images: imageUrls,
-                caption: post.caption || "",
-                privacy_level: "PUBLIC_TO_EVERYONE",
+                post_mode: "DIRECT_POST",
+                post_info: {
+                  description: post.caption || "",
+                  privacy_level: "SELF_ONLY",
+                  disable_comment: false,
+                  auto_add_music: true,
+                },
+                source_info: {
+                  source: "PULL_FROM_URL",
+                  photo_images: imageUrls,
+                  photo_cover_index: 0,
+                },
               }),
             },
           );

@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AuthShell } from "@/components/auth-shell";
 import { Suspense } from "react";
 
 async function ErrorContent({
@@ -29,23 +30,23 @@ export default function Page({
   searchParams: Promise<{ error: string }>;
 }) {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                Sorry, something went wrong.
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Suspense>
-                <ErrorContent searchParams={searchParams} />
-              </Suspense>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
+    <AuthShell>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">
+            Qualcosa è andato storto
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Suspense>
+            <ErrorContent searchParams={searchParams} />
+          </Suspense>
+          <p className="text-xs text-muted-foreground">
+            Se il problema persiste, riprova tra qualche minuto oppure effettua
+            nuovamente l&apos;accesso.
+          </p>
+        </CardContent>
+      </Card>
+    </AuthShell>
   );
 }
